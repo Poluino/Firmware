@@ -1,0 +1,130 @@
+#include <Arduino.h>
+
+/*I2C Library*/
+#include <Wire.h>
+
+//Wifi
+#include "WiFi.h"
+#include <HTTPClient.h>
+#include <HTTPUpdate.h>
+const char* SSID = "Pede_acesso!";
+const char* PASSWORD = "Naodouacesso!";
+int connect_attempts = 0;
+int max_attempts = 10;
+//const char* board_id = "1";
+//const char* user_id = "5f756deabd461c210323d652de22df715526dc82079506db804b696de227a866";
+HTTPClient http;
+
+//timers
+long lastTime;
+long timerDelay = 2000000; //in micros
+
+/*BMP280 and DHT11*/
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h>
+#include "DHT.h"
+#define DHTTYPE DHT11   // DHT 11
+#define DHTPIN 5 
+Adafruit_BMP280 bmp;
+float temperature;
+float pressure;
+float humidity;
+String temp_string;
+String pressure_string;
+
+
+#include <ArduinoJson.h>
+boolean sent_data_success;
+
+
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(115200);
+  
+  //Check if the Sensor is plugged in
+  if(!bmp.begin(0x76)) {
+    Serial.println("BMP280 wasnt been identified");
+    Serial.println("Error: 001");
+    while(1);
+  }
+  dht.begin();
+  
+  WiFi.begin(SSID, PASSWORD);
+ 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(200);
+
+    if (connect_attempts >= max_attempts) {
+
+      Serial.println("Unable to connect to the wifi!");
+      Serial.println("Board will not be connected to the internet!");
+      delay(2000);
+      break;
+    }
+    else {
+      Serial.println("Attempting to connect to wifi");
+      connect_attempts = connect_attempts + 1;
+
+    }
+
+  }
+
+
+}
+
+void loop() {
+  temperature = bmp.readTemperature();
+  pressure = bmp.readPressure();
+  humidity = dht.readHumidity();
+  temp_string = String(temperature);
+  pressure_string = String(pressure/100);
+  String humidity_string = String(humidity);
+  
+  long time_start = esp_timer_get_time();
+
+  if (WiFi.status() == WL_CONNECTED){
+    Serial.println("Wifi: Connected");
+    long time = time_start - lastTime;
+    if (time >= timerDelay){
+      String serverURL = "https://api.weatherstationproject.com/api_chocolate/update_data.php";
+      http.begin(serverURL);
+      http.addHeader("Content-Type", "application/json");
+
+
+
+      StaticJsonDocument<200> json_data;
+      // Add values in the document
+      //
+      json_data["api"] = "chocolate";
+      json_data["user_id"] = "5f756deabd461c210323d652de22df715526dc82079506db804b696de227a866";
+      json_data["board_id"] = "5";
+      json_data["temperature"] = temp_string;
+      json_data["pressure"] = pressure_string;
+      json_data["humidity"] = humidity_string;
+
+      String requestBody;
+      serializeJson(json_data, requestBody);
+
+
+      int httpResponseCode = http.POST(requestBody);
+      Serial.println(httpResponseCode);
+      Serial.println(http.getString());
+      if (httpResponseCode == 200) {
+          lastTime = esp_timer_get_time();
+      } else {
+          lastTime = esp_timer_get_time();
+      }
+        http.end();
+    }
+  } else {
+    Serial.println("Wifi: Not connected");
+
+  }
+  Serial.println("Temperature: " + temp_string + "C");
+  Serial.println("Pressure: " + pressure_string + "hPa");
+  Serial.println("Humidity: " + humidity_string + "RH");
+  
+}
+
