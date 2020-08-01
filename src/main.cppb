@@ -11,8 +11,6 @@ const char* SSID = "Pede_acesso!";
 const char* PASSWORD = "Naodouacesso!";
 int connect_attempts = 0;
 int max_attempts = 10;
-//const char* board_id = "1";
-//const char* user_id = "5f756deabd461c210323d652de22df715526dc82079506db804b696de227a866";
 HTTPClient http;
 
 //timers
@@ -88,7 +86,8 @@ void loop() {
     Serial.println("Wifi: Connected");
     long time = time_start - lastTime;
     if (time >= timerDelay){
-      String serverURL = "https://api.weatherstationproject.com/api_chocolate/update_data.php";
+      String serverURL = "https://api.weatherstationproject.com/api/v2/update_data.php";
+      //String serverURL = "https://api.weatherstationproject.com/api/v1/update_data.php";
       http.begin(serverURL);
       http.addHeader("Content-Type", "application/json");
 
@@ -96,10 +95,10 @@ void loop() {
 
       StaticJsonDocument<200> json_data;
       // Add values in the document
-      //
-      json_data["api"] = "chocolate";
-      json_data["user_id"] = "5f756deabd461c210323d652de22df715526dc82079506db804b696de227a866";
-      json_data["board_id"] = "5";
+      json_data["token"] = "put board token here";
+      //for if you use api v1
+      //json_data["user_id"] = "put user id here";
+      //json_data["board_id"] = "put board id here";
       json_data["temperature"] = temp_string;
       json_data["pressure"] = pressure_string;
       json_data["humidity"] = humidity_string;
