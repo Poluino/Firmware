@@ -86,8 +86,8 @@ void loop() {
     Serial.println("Wifi: Connected");
     long time = time_start - lastTime;
     if (time >= timerDelay){
-      String serverURL = "https://api.weatherstationproject.com/api/v2/update_data.php";
-      //String serverURL = "https://api.weatherstationproject.com/api/v1/update_data.php";
+      //String serverURL = "https://api.weatherstationproject.com/api/beta/private/update_data.php";
+      String serverURL = "https://api.weatherstationproject.com/api/v1/private/update_data.php";
       http.begin(serverURL);
       http.addHeader("Content-Type", "application/json");
 
