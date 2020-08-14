@@ -8,8 +8,8 @@
 /*Wifi*/
 #include "WiFi.h"
 #include <HTTPClient.h>
-const char* SSID = "yo mama";
-const char* PASSWORD = "elegant35";
+const char* SSID = "wifi ssid";
+const char* PASSWORD = "wifi pass";
 int connect_attempts = 0;
 int max_attempts = 10;
 const char* token = "board"; //board token
