@@ -1,129 +1,113 @@
 #include <Arduino.h>
-
+/*JSON Library*/
+#include <ArduinoJson.h>
+/*DHT11 Library*/
+#include "DHT.h"
 /*I2C Library*/
 #include <Wire.h>
-
-//Wifi
+/*Wifi*/
 #include "WiFi.h"
 #include <HTTPClient.h>
-#include <HTTPUpdate.h>
-const char* SSID = "Pede_acesso!";
-const char* PASSWORD = "Naodouacesso!";
+const char* SSID = "yo mama";
+const char* PASSWORD = "elegant35";
 int connect_attempts = 0;
 int max_attempts = 10;
+const char* token = "board"; //board token
+String API_URL = "https://api.weatherstationproject.com/api/development/v2/private/update_data.php";
 HTTPClient http;
 
-//timers
+//timer for how often to post to website
 long lastTime;
-long timerDelay = 2000000; //in micros
+//timer for 10 minutes
+long timerDelay = 600000000; //in micros
 
-/*BMP280 and DHT11*/
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BMP280.h>
-#include "DHT.h"
 #define DHTTYPE DHT11   // DHT 11
-#define DHTPIN 5 
-Adafruit_BMP280 bmp;
+#define DHTPIN 5
 float temperature;
-float pressure;
 float humidity;
 String temp_string;
-String pressure_string;
-
-
-#include <ArduinoJson.h>
+String humidity_string;
 boolean sent_data_success;
-
-
 
 DHT dht(DHTPIN, DHTTYPE);
 
-void setup() {
-  Serial.begin(115200);
-  
-  //Check if the Sensor is plugged in
-  if(!bmp.begin(0x76)) {
-    Serial.println("BMP280 wasnt been identified");
-    Serial.println("Error: 001");
-    while(1);
+
+void getData() {
+  //Read sensors
+  temperature = dht.readTemperature();
+  humidity = dht.readHumidity();
+  //Turn sensor values into strings
+  temp_string = String(temperature);
+  humidity_string = String(humidity);
+}
+
+void sendData(){
+  http.begin(API_URL);
+  http.addHeader("Content-Type", "application/json");
+
+  StaticJsonDocument<200> json_data;
+  // Add values in the document
+  json_data["token"] = token;
+  json_data["temperature"] = temp_string;
+  json_data["humidity"] = humidity_string;
+  json_data["pressure"] = "-255";
+  json_data["rainfall"] = "-255";
+  json_data["wind_speed"] = "-255";
+  json_data["wind_direction"] = "-255";
+  json_data["soil_moisture"] = "-255";
+  json_data["pressure"] = "-255";
+  json_data["lux"] = "-255";
+  json_data["uv_index"] = "-255";
+
+  String requestBody;
+  serializeJson(json_data, requestBody);
+
+  int httpResponseCode = http.POST(requestBody);
+  Serial.println(httpResponseCode);
+  Serial.println(http.getString());
+  if (httpResponseCode == 200) {
+      lastTime = esp_timer_get_time();
+  } else {
+      lastTime = esp_timer_get_time();
   }
+  http.end();
+}
+
+
+void setup() {
+  Serial.begin(9600);
   dht.begin();
-  
   WiFi.begin(SSID, PASSWORD);
- 
+
   while (WiFi.status() != WL_CONNECTED) {
-    delay(200);
-
     if (connect_attempts >= max_attempts) {
-
       Serial.println("Unable to connect to the wifi!");
-      Serial.println("Board will not be connected to the internet!");
+      Serial.println("Board will not be");
+      Serial.println("connected to the");
+      Serial.println("internet!");
       delay(2000);
       break;
     }
     else {
       Serial.println("Attempting to connect to wifi");
       connect_attempts = connect_attempts + 1;
-
     }
-
   }
-
-
+  getData();
+  sendData();
 }
 
 void loop() {
-  temperature = bmp.readTemperature();
-  pressure = bmp.readPressure();
-  humidity = dht.readHumidity();
-  temp_string = String(temperature);
-  pressure_string = String(pressure/100);
-  String humidity_string = String(humidity);
-  
   long time_start = esp_timer_get_time();
-
+  //check if wifi is connected
   if (WiFi.status() == WL_CONNECTED){
-    Serial.println("Wifi: Connected");
     long time = time_start - lastTime;
+    //check if delay is done
     if (time >= timerDelay){
-      //String serverURL = "https://api.weatherstationproject.com/api/beta/private/update_data.php";
-      String serverURL = "https://api.weatherstationproject.com/api/v1/private/update_data.php";
-      http.begin(serverURL);
-      http.addHeader("Content-Type", "application/json");
-
-
-
-      StaticJsonDocument<200> json_data;
-      // Add values in the document
-      json_data["token"] = "put board token here";
-      //for if you use api v1
-      //json_data["user_id"] = "put user id here";
-      //json_data["board_id"] = "put board id here";
-      json_data["temperature"] = temp_string;
-      json_data["pressure"] = pressure_string;
-      json_data["humidity"] = humidity_string;
-
-      String requestBody;
-      serializeJson(json_data, requestBody);
-
-
-      int httpResponseCode = http.POST(requestBody);
-      Serial.println(httpResponseCode);
-      Serial.println(http.getString());
-      if (httpResponseCode == 200) {
-          lastTime = esp_timer_get_time();
-      } else {
-          lastTime = esp_timer_get_time();
-      }
-        http.end();
+      getData();
+      sendData();
     }
   } else {
     Serial.println("Wifi: Not connected");
-
   }
-  Serial.println("Temperature: " + temp_string + "C");
-  Serial.println("Pressure: " + pressure_string + "hPa");
-  Serial.println("Humidity: " + humidity_string + "RH");
-  
 }
-
