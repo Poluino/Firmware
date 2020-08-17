@@ -14,6 +14,11 @@ It can be modified to collect and send these types of data:
 -Pressure
 -Lux
 -UV Index
+
+Required Libraries:
+ArduinoJson By bartoz Bielawski
+DHT sensor library By Adafruit
+AduinoHttpClient By Arduino
 */
 
 
