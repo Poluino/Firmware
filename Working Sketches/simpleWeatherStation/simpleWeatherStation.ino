@@ -74,6 +74,7 @@ void sendData(){
   json_data["token"] = token;
   json_data["temperature"] = temp_string;
   json_data["humidity"] = humidity_string;
+  //all values nut used must be posted as -255
   json_data["pressure"] = "-255";
   json_data["rainfall"] = "-255";
   json_data["wind_speed"] = "-255";
@@ -85,7 +86,7 @@ void sendData(){
 
   String requestBody;
   serializeJson(json_data, requestBody);
-
+  //send data to website and get server response
   int httpResponseCode = http.POST(requestBody);
   Serial.println(httpResponseCode);
   Serial.println(http.getString());
@@ -117,6 +118,7 @@ void setup() {
       connect_attempts = connect_attempts + 1;
     }
   }
+  //get and send data as soon as esp32 is plugged in
   getData();
   sendData();
 }
@@ -128,6 +130,7 @@ void loop() {
     long time = time_start - lastTime;
     //check if delay is done
     if (time >= timerDelay){
+      //get and send data
       getData();
       sendData();
     }
