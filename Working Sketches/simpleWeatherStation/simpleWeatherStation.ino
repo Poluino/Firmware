@@ -1,3 +1,22 @@
+/*
+This sketch is for a ESP32
+What it does:
+This sketch gets data from a DHT11 temperature and humidity sensor
+and posts it to weatherstationproject.com
+It can be modified to collect and send these types of data:
+-Temperature
+-Humidity
+-Pressure
+-Rainfall
+-Wind Speed
+-Wind Direction
+-Soil Moisture
+-Pressure
+-Lux
+-UV Index
+*/
+
+
 #include <Arduino.h>
 /*JSON Library*/
 #include <ArduinoJson.h>
