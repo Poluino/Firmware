@@ -19,6 +19,8 @@ Required Libraries:
 ArduinoJson By bartoz Bielawski
 DHT sensor library By Adafruit
 AduinoHttpClient By Arduino
+
+Connect DHT11 to pin 5
 */
 
 
@@ -32,11 +34,12 @@ AduinoHttpClient By Arduino
 /*Wifi*/
 #include "WiFi.h"
 #include <HTTPClient.h>
+// wifi name and password so the esp32 can connect to it
 const char* SSID = "wifi_ssid";
 const char* PASSWORD = "wifi_pass";
 int connect_attempts = 0;
 int max_attempts = 10;
-const char* token = "board_token"; //board token
+const char* token = "board_token"; //get board token from website
 String API_URL = "https://api.weatherstationproject.com/api/v2/private/update_data.php";
 HTTPClient http;
 
@@ -46,7 +49,7 @@ long lastTime;
 long timerDelay = 600000000; //in micros
 
 #define DHTTYPE DHT11   // DHT 11
-#define DHTPIN 5
+#define DHTPIN 5  //Connect DHT11 to pin 5
 float temperature;
 float humidity;
 String temp_string;
