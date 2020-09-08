@@ -1,6 +1,6 @@
 /*
     The Weather Station Project's Firmware for the BareBones Kit.
-    This file is protected by the GNU General Public License V - 3.0
+    This file is protected by the GNU General Public License V -3.0
     More information about the license of this file can be found in the 
     LICENSE file on our GitHub Repository.
     For More information about the GNU General Public License V - 3.0,
