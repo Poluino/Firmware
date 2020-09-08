@@ -68,7 +68,7 @@ float pressure;
 
 long timerDelay = 60000;//Enter the Delay time (in milliseconds) here. It defines how often the ESP32 sends data to the website. 
 
-String API_URL = "Paste the most recent API URL here."; //Visit our website to get the Most recent version of the API URL
+String API_URL = "https://api.weatherstationproject.com/api/v2/private/update_data.php"; //Visit our website to get the Most recent version of the API URL
 
 void setup() {
   // put your setup code here, to run once:
@@ -104,7 +104,7 @@ void loop(){
   String str_humidity = String(humidity); //Making a String Variable hold the Humidity data for further use.
 
   Serial.print("[HTTPS] begin...\n");
-  if (http.begin("https://api.weatherstationproject.com/api/v2/private/update_data.php")) {  // HTTPS connection between the ESP32 and the Website is established.
+  if (http.begin(API_URL)) {  // HTTPS connection between the ESP32 and the Website is established.
 
   http.addHeader("Content-Type", "application/json"); //A Header is added to the Connection
   }
@@ -126,7 +126,6 @@ void loop(){
 
   String requestBody;
   serializeJson(json_data, requestBody); //Finalizes the JSON document and makes it ready for transfer.
-
 
   int httpResponseCode = http.POST(requestBody); //Handles the POST Request to the API
   Serial.println(httpResponseCode); // Prints out the Response Code of the API. Useful to determine if the code is working correctly.
