@@ -40,7 +40,7 @@ const char* PASSWORD = "wifi_pass";
 int connect_attempts = 0;
 int max_attempts = 10;
 const char* token = "board_token"; //get board token from website
-String API_URL = "https://api.weatherstationproject.com/api/v2/private/update_data.php";
+const String API_URL = "https://api.weatherstationproject.com/api/v2/private/update_data.php";
 HTTPClient http;
 
 //timer for how often to post to website
