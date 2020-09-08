@@ -112,7 +112,7 @@ void loop(){
   StaticJsonDocument<200> json_data; //The JSON Document which will be used to send the data to the website is created
   // Add values in the document
   //
-  json_data["token"] = "Your Board's Token"; //Paste your board's token here form your account page on our Website. 5f1879770056d
+  json_data["token"] = "Your Board's Token"; //Paste your board's token here form your account page on our Website.
   json_data["rainfall"] = "-255";            //These are the parameters supported by our API. As the Barebones Kit Only comes with
   json_data["wind_speed"] = "-255";          //Temperature, Pressure, and Humidity, we are using the value "-255" to indicate that 
   json_data["wind_direction"] = "-255";      //the respective sensors are not connected / used.
