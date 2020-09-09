@@ -23,6 +23,7 @@
 /*
     Edited on 9th September 2020
       by Dhruv Sujatha
+      - Added Support for DHTxx and BMP280 Sensors.
 */
 
 /*
@@ -57,8 +58,21 @@
 #include <Adafruit_BME280.h> //This is a library contributed by the Adafruit Industries which helps us interface with the BME280 sensor
 #include <HTTPClient.h> //This Library is used to make HTTP Requests such as POST.
 #include <WiFi.h> //This Library is used to connect the ESP32 to your WiFi Network
+//#include <Adafruit_BMP280.h> // Uncomment this line if you want to use the BMP280 Sensor.
+//#include "DHT.h" // UNcomment this line if you are using the DHT range of sensors.
+
+//#define DHTPIN 2
+
+// Uncomment whatever type you're using!
+//#define DHTTYPE DHT11   // DHT 11
+//#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+//#define DHTTYPE DHT21   // DHT 21 (AM2301)
+
+//DHT dht(DHTPIN, DHTTYPE);
 
 HTTPClient http;
+
+//Adafruit_BMP280 bmp;
 
 Adafruit_BME280 bme;
 
@@ -68,26 +82,37 @@ float pressure;
 
 long timerDelay = 60000;//Enter the Delay time (in milliseconds) here. It defines how often the ESP32 sends data to the website. 
 
-String API_URL = "Paste the most recent API URL here."; //Visit our website to get the Most recent version of the API URL
+String API_URL = "Paste the most recent API URL here."; //Visit our website to get the Most recent version of the API URL.
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  WiFi.begin("Your SSID", "Your Password"); //Make sure to put in your WiFi SSID and Password
-  Serial.println("Connecting...");
+  WiFi.begin("Dhruv", "9600057852"); //Make sure to put in your WiFi SSID and Password.
+  Serial.println();
+  Serial.print("Connecting...");
 
-  while (WiFi.status() != WL_CONNECTED) {  // To check if the ESP32 is connected to your WiFi Network
+  while (WiFi.status() != WL_CONNECTED) {  // To check if the ESP32 is connected to your WiFi Network.
     delay(500);
     Serial.print(".");
   }
   if (WiFi.status() == WL_CONNECTED){
+    Serial.println();
     Serial.println("Connected to :");
-    Serial.println(WiFi.SSID()); //Prints out the SSID
+    Serial.println(WiFi.SSID()); //Prints out the SSID.
     Serial.println("IP address: ");
-    Serial.println(WiFi.localIP()); //Prints out the IP Address of the ESP32 in your Network
+    Serial.println(WiFi.localIP()); //Prints out the IP Address of the ESP32 in your Network.
   }
 
-  if (!bme.begin()) { //This step initializes the BME280 sensor and if the sensor isn't recognized, it throws an Error Message 
+  //dht.begin(); //Initializes the DHTxx Sensor
+
+  /*
+  if (!bmp.begin()) { //This step initializes the BMP280 sensor and if the sensor isn't recognized, it throws an Error Message.
+    Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
+    while (1) delay(10);
+  }
+  */
+
+  if (!bme.begin()) { //This step initializes the BME280 sensor and if the sensor isn't recognized, it throws an Error Message. 
     Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
     while (1) delay(10);
   }
@@ -95,6 +120,13 @@ void setup() {
 
 void loop(){
 
+  //humidity = dht.readHumidity(); //Reads Humidity Data from the DHTxx Sensor Used.
+
+  /*
+  temperature = bmp.readTemperature(); //Retrieves the Temperature Data from the BMP280.
+  pressure = bmp.readPressure(); //Retrieves the Pressure Data from the BMP280.
+  */
+  
   temperature = bme.readTemperature(); //Retrieves the Temperature Data from the BME280.
   pressure = bme.readPressure(); //Retrieves the Pressure Data from the BME280.
   humidity = bme.readHumidity(); //Retrieves the Humidity Data from the BME280.
@@ -112,7 +144,7 @@ void loop(){
   StaticJsonDocument<200> json_data; //The JSON Document which will be used to send the data to the website is created
   // Add values in the document
   //
-  json_data["token"] = "Your Board's Token"; //Paste your board's token here form your account page on our Website. 5f1879770056d
+  json_data["token"] = "5f1879770056d"; //Paste your board's token here form your account page on our Website. 5f1879770056d
   json_data["rainfall"] = "-255";            //These are the parameters supported by our API. As the Barebones Kit Only comes with
   json_data["wind_speed"] = "-255";          //Temperature, Pressure, and Humidity, we are using the value "-255" to indicate that 
   json_data["wind_direction"] = "-255";      //the respective sensors are not connected / used.
