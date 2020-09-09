@@ -1,6 +1,6 @@
 /*
     The Weather Station Project's Firmware for the BareBones Kit.
-    This file is protected by the GNU General Public License V - 3.0
+    This file is protected by the GNU General Public License V -3.0
     More information about the license of this file can be found in the 
     LICENSE file on our GitHub Repository.
     For More information about the GNU General Public License V - 3.0,
@@ -136,7 +136,7 @@ void loop(){
   String str_humidity = String(humidity); //Making a String Variable hold the Humidity data for further use.
 
   Serial.print("[HTTPS] begin...\n");
-  if (http.begin("https://api.weatherstationproject.com/api/v2/private/update_data.php")) {  // HTTPS connection between the ESP32 and the Website is established.
+  if (http.begin(API_URL)) {  // HTTPS connection between the ESP32 and the Website is established.
 
   http.addHeader("Content-Type", "application/json"); //A Header is added to the Connection
   }
@@ -144,7 +144,7 @@ void loop(){
   StaticJsonDocument<200> json_data; //The JSON Document which will be used to send the data to the website is created
   // Add values in the document
   //
-  json_data["token"] = "5f1879770056d"; //Paste your board's token here form your account page on our Website. 5f1879770056d
+  json_data["token"] = "Your Board's Token"; //Paste your board's token here form your account page on our Website.
   json_data["rainfall"] = "-255";            //These are the parameters supported by our API. As the Barebones Kit Only comes with
   json_data["wind_speed"] = "-255";          //Temperature, Pressure, and Humidity, we are using the value "-255" to indicate that 
   json_data["wind_direction"] = "-255";      //the respective sensors are not connected / used.
@@ -158,7 +158,6 @@ void loop(){
 
   String requestBody;
   serializeJson(json_data, requestBody); //Finalizes the JSON document and makes it ready for transfer.
-
 
   int httpResponseCode = http.POST(requestBody); //Handles the POST Request to the API
   Serial.println(httpResponseCode); // Prints out the Response Code of the API. Useful to determine if the code is working correctly.
