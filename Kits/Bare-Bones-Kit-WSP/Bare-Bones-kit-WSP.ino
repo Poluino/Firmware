@@ -82,7 +82,7 @@ float pressure;
 
 long timerDelay = 60000;//Enter the Delay time (in milliseconds) here. It defines how often the ESP32 sends data to the website. 
 
-String API_URL = "Paste the most recent API URL here."; //Visit our website to get the Most recent version of the API URL.
+String API_URL = "Paste the most recent API URL here."; //Visit https://api.weatherstationproject.com/ to get the Most recent version of the API URL.
 
 void setup() {
   // put your setup code here, to run once:
