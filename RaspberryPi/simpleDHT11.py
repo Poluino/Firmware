@@ -1,12 +1,12 @@
 import gpiozero
-import Adafruit_DHT
+import Adafruit_DHT # https://github.com/adafruit/Adafruit_Python_DHT
 import requests
 import time
 while True:
-    time.sleep(9)
+    time.sleep(9) 
     h, t = Adafruit_DHT.read_retry(11, 4)
-    weatherstation_url = 'https://beta.api.weatherstationproject.com/data/update'
-    Message = {
+    weatherstation_url = 'https://beta.api.weatherstationproject.com/data/update' # WSP API
+    message = {
         "token": "token",
         "rainfall": "-255",
         "wind_speed": "-255" ,
@@ -19,7 +19,7 @@ while True:
         "humidity": h,
     }
     try:
-        requests.post(weatherstation_url, json=Message)
+        requests.post(weatherstation_url, json=message)
         print('request sent')
     except Exception as E:
         print(E)`
