@@ -1,9 +1,9 @@
 /*
 
-    * * *   ESP32 Weather Station Project   * * * 
+    * * *   ESP32 Poluino Project   * * * 
     
     This sketch gets data from a DHT11 temperature and humidity sensor
-    and posts it to weatherstationproject.com.
+    and posts it to poluino.com.
     
     It can be modified to collect and send these types of data:
     - Temperature
@@ -50,7 +50,7 @@ const char* password = "MyPassword";
 // Just API things...
 
 // Go to https://api.weatherstationproject.com/ to get the most recent API link!
-const String API_URL = "https://api.weatherstationproject.com/api/v2/private/update_data.php";
+const String API_URL = "https://api.poluino.com/api/v2/private/update_data.php";
  
 // Go to Account --> Boards on https://weatherstationproject.com to get your board token!
 const char* token = "board_token_goes_here!"; 
